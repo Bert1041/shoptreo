@@ -68,52 +68,54 @@ class _SignUpScreenState extends State<SignUpScreen> with FormValidationMixin {
         elevation: 0,
         backgroundColor: AppColors.white,
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.white, AppColors.secondary],
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.white, AppColors.secondary],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  // Header
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Create Your Account",
-                        style: TextStyle(
-                          fontFamily: 'Filson Pro',
-                          fontSize: 32.sp,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w500,
-                        ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                // Header
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Create Your Account",
+                      style: TextStyle(
+                        fontFamily: 'Filson Pro',
+                        fontSize: 32.sp,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w500,
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        "Welcome to Shoptreo",
-                        style: TextStyle(
-                          fontFamily: 'Filson Pro',
-                          fontSize: 17.sp,
-                          color: AppColors.black,
-                          fontWeight: FontWeight.w400,
-                        ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Welcome to Shoptreo",
+                      style: TextStyle(
+                        fontFamily: 'Filson Pro',
+                        fontSize: 17.sp,
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w400,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
 
-                  // Fields
-                  Column(
+                Spacer(flex: 1),
+                // Fields
+                Expanded(
+                  flex: 4,
+                  child: ListView(
                     children: [
                       AppDropdownField<String>(
                         label: 'Select Country',
@@ -176,83 +178,83 @@ class _SignUpScreenState extends State<SignUpScreen> with FormValidationMixin {
                       ),
                     ],
                   ),
+                ),
 
-                  // Terms and Button
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Transform.scale(
-                            scale: 0.6,
-                            child: Switch(
-                              value: _agreedToTerms,
-                              activeColor: AppColors.primary,
-                              onChanged: (value) {
-                                setState(() {
-                                  _agreedToTerms = value;
-                                });
-                              },
-                            ),
+                // Terms and Button
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Transform.scale(
+                          scale: 0.6,
+                          child: Switch(
+                            value: _agreedToTerms,
+                            activeColor: AppColors.primary,
+                            onChanged: (value) {
+                              setState(() {
+                                _agreedToTerms = value;
+                              });
+                            },
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: RichText(
-                              text: TextSpan(
-                                style: TextStyle(
-                                  fontFamily: 'Filson Pro',
-                                  fontSize: 12.sp,
-                                  color: AppColors.black,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                children: [
-                                  const TextSpan(text: 'I agree to Shoptreo '),
-                                  TextSpan(
-                                    text: 'Terms',
-                                    style: TextStyle(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    recognizer:
-                                        TapGestureRecognizer()
-                                          ..onTap = () {
-                                            // TODO: Navigate to Terms screen
-                                          },
-                                  ),
-                                  const TextSpan(text: ' and '),
-                                  TextSpan(
-                                    text: 'Privacy Policy',
-                                    style: TextStyle(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    recognizer:
-                                        TapGestureRecognizer()
-                                          ..onTap = () {
-                                            // TODO: Navigate to Privacy Policy screen
-                                          },
-                                  ),
-                                ],
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(
+                                fontFamily: 'Filson Pro',
+                                fontSize: 12.sp,
+                                color: AppColors.black,
+                                fontWeight: FontWeight.w400,
                               ),
+                              children: [
+                                const TextSpan(text: 'I agree to Shoptreo '),
+                                TextSpan(
+                                  text: 'Terms',
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  recognizer:
+                                      TapGestureRecognizer()
+                                        ..onTap = () {
+                                          // TODO: Navigate to Terms screen
+                                        },
+                                ),
+                                const TextSpan(text: ' and '),
+                                TextSpan(
+                                  text: 'Privacy Policy',
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  recognizer:
+                                      TapGestureRecognizer()
+                                        ..onTap = () {
+                                          // TODO: Navigate to Privacy Policy screen
+                                        },
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                      _isLoading
-                          ? AppLoader()
-                          : AppButton(
-                            label: 'Next',
-                            isPrimary: false,
-                            outlineBackgroundColor: AppColors.white,
-                            outlineButtonColor: AppColors.primary,
-                            onPressed: _agreedToTerms ? () => _submit() : () {},
-                            margin: 0,
-                          ),
-                    ],
-                  ),
-                ],
-              ),
+                        ),
+                      ],
+                    ),
+                    _isLoading
+                        ? AppLoader()
+                        : AppButton(
+                          label: 'Next',
+                          isPrimary: false,
+                          outlineBackgroundColor: AppColors.white,
+                          outlineButtonColor: AppColors.primary,
+                          onPressed: _agreedToTerms ? () => _submit() : () {},
+                          margin: 0,
+                        ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),

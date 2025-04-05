@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shoptreo/config/constants/colors.dart';
+import 'package:shoptreo/core/providers/auth_provider.dart';
 import 'package:shoptreo/core/providers/product_provider.dart';
 import 'package:shoptreo/shared/widgets/app_loader.dart';
 import 'package:shoptreo/shared/widgets/custom_search_field.dart';
@@ -39,13 +40,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void _scrollListener() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      context.read<ProductProvider>().loadMoreProducts(); // Load more when reached the end
+      context.read<ProductProvider>().loadMoreProducts();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final productProvider = context.watch<ProductProvider>();
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -62,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             children: <TextSpan>[
               TextSpan(
-                text: 'Guest',
+                text: authProvider.userName ?? 'Guest',
                 style: TextStyle(
                   fontFamily: 'Filson Pro',
                   fontSize: 17.sp,
@@ -101,84 +103,84 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: productProvider.isLoading && productProvider.visibleProducts.isEmpty
-          ? const AppLoader()
-          : productProvider.isError
-          ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              color: AppColors.primary,
-              size: 40.sp,
-            ),
-            SizedBox(height: 10.h),
-            Text(
-              productProvider.errorMessage ?? 'An error occurred.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Filson Pro',
-                fontSize: 16.sp,
-                color: AppColors.black,
-              ),
-            ),
-            SizedBox(height: 20.h),
-            ElevatedButton(
-              onPressed: () => productProvider.fetchProducts(),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      )
-          : SingleChildScrollView(
-        controller: _scrollController,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 15.h),
-              CustomSearchField(onQrTap: () {}, onCameraTap: () {}),
-              SizedBox(height: 50.h),
-              TopPicksCard(),
-              SizedBox(height: 50.h),
-              Text(
-                "You May Like",
-                style: TextStyle(
-                  fontFamily: 'Filson Pro',
-                  fontSize: 22.sp,
-                  color: AppColors.greyShade,
-                  fontWeight: FontWeight.w500,
+      body:
+          productProvider.isLoading && productProvider.visibleProducts.isEmpty
+              ? const AppLoader()
+              : productProvider.isError
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: AppColors.primary,
+                      size: 40.sp,
+                    ),
+                    SizedBox(height: 10.h),
+                    Text(
+                      productProvider.errorMessage ?? 'An error occurred.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Filson Pro',
+                        fontSize: 16.sp,
+                        color: AppColors.black,
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    ElevatedButton(
+                      onPressed: () => productProvider.fetchProducts(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              )
+              : SingleChildScrollView(
+                controller: _scrollController,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 15.h),
+                      CustomSearchField(onQrTap: () {}, onCameraTap: () {}),
+                      SizedBox(height: 50.h),
+                      TopPicksCard(),
+                      SizedBox(height: 50.h),
+                      Text(
+                        "You May Like",
+                        style: TextStyle(
+                          fontFamily: 'Filson Pro',
+                          fontSize: 22.sp,
+                          color: AppColors.greyShade,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: 20.h),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.56.h,
+                        ),
+                        itemCount:
+                            productProvider.visibleProducts.length +
+                            (productProvider.hasMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index >= productProvider.visibleProducts.length) {
+                            return const AppLoader();
+                          }
+                          return ProductCard(
+                            product: productProvider.visibleProducts[index],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(height: 20.h),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate:
-                 SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.56.h,
-                ),
-                itemCount:
-                productProvider.visibleProducts.length +
-                    (productProvider.hasMore ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index >= productProvider.visibleProducts.length) {
-                    return const AppLoader();
-                  }
-                  return ProductCard(
-                    product: productProvider.visibleProducts[index],
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
