@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shoptreo/core/app/app_root.dart';
+import 'package:shoptreo/core/services/api_service.dart';
 
 import 'core/providers/auth_provider.dart';
 import 'core/providers/product_provider.dart';
@@ -23,7 +24,9 @@ class MyApp extends StatelessWidget {
             return provider;
           },
         ),
-        ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(
+          create: (_) => ProductProvider(ProductApiService()),
+        ),
       ],
       child: const AppRoot(),
     );

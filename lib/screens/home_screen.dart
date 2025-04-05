@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shoptreo/config/constants/colors.dart';
-import 'package:shoptreo/core/models/product.dart';
-import 'package:shoptreo/core/providers/auth_provider.dart';
-import 'package:shoptreo/core/services/api_service.dart';
+import 'package:shoptreo/core/providers/product_provider.dart';
 import 'package:shoptreo/shared/widgets/app_loader.dart';
 import 'package:shoptreo/shared/widgets/custom_search_field.dart';
 import 'package:shoptreo/shared/widgets/product_card.dart';
@@ -17,91 +15,37 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  final ProductApiService _apiService = ProductApiService();
-  List<Product> _allProducts = [];
-  List<Product> _visibleProducts = [];
-  bool _isLoading = true;
-  bool _hasMore = true;
-  bool _isError = false; // Add an error flag
-  String? _errorMessage; // Add a variable to store error messages
-  final int _batchSize = 10;
+class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
-
-  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _loadAllProducts();
+    // Schedule fetchProducts after widget build is complete
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final productProvider = context.read<ProductProvider>();
+      productProvider.fetchProducts(); // Fetch products after the widget builds
+    });
+
     _scrollController.addListener(_scrollListener);
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-    );
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _tabController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadAllProducts() async {
-    try {
-      final products = await _apiService.fetchProducts();
-      setState(() {
-        _allProducts = products;
-        _visibleProducts = products.take(_batchSize).toList();
-        _hasMore = products.length > _batchSize;
-        _isLoading = false;
-        _isError = false; // Reset error flag if API is successful
-      });
-    } catch (e) {
-      print('Error loading products: $e');
-      setState(() {
-        _isLoading = false;
-        _isError = true; // Set error flag to true if API fails
-        _errorMessage = 'Failed to load products. Please try again later.'; // Set error message
-      });
-    }
-  }
-
-  void _loadMoreProducts() {
-    if (!_hasMore || _isLoading) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    Future.delayed(const Duration(milliseconds: 500), () {
-      final nextIndex = _visibleProducts.length;
-      final endIndex = nextIndex + _batchSize;
-
-      setState(() {
-        _visibleProducts.addAll(
-          _allProducts.sublist(
-            nextIndex,
-            endIndex > _allProducts.length ? _allProducts.length : endIndex,
-          ),
-        );
-        _hasMore = endIndex < _allProducts.length;
-        _isLoading = false;
-      });
-    });
   }
 
   void _scrollListener() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      _loadMoreProducts();
+      context.read<ProductProvider>().loadMoreProducts(); // Load more when reached the end
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final userName = context.watch<AuthProvider>().userName ?? 'Guest';
+    final productProvider = context.watch<ProductProvider>();
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -118,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
             children: <TextSpan>[
               TextSpan(
-                text: userName,
+                text: 'Guest',
                 style: TextStyle(
                   fontFamily: 'Filson Pro',
                   fontSize: 17.sp,
@@ -157,9 +101,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
-      body: _isLoading && _visibleProducts.isEmpty
+      body: productProvider.isLoading && productProvider.visibleProducts.isEmpty
           ? const AppLoader()
-          : _isError
+          : productProvider.isError
           ? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -171,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
             SizedBox(height: 10.h),
             Text(
-              _errorMessage ?? 'An error occurred.',
+              productProvider.errorMessage ?? 'An error occurred.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Filson Pro',
@@ -181,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
             SizedBox(height: 20.h),
             ElevatedButton(
-              onPressed: _loadAllProducts,
+              onPressed: () => productProvider.fetchProducts(),
               child: const Text('Retry'),
             ),
           ],
@@ -195,14 +139,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 15.h),
-              CustomSearchField(
-                onQrTap: () {
-                  print("QR tapped");
-                },
-                onCameraTap: () {
-                  print("Camera tapped");
-                },
-              ),
+              CustomSearchField(onQrTap: () {}, onCameraTap: () {}),
               SizedBox(height: 50.h),
               TopPicksCard(),
               SizedBox(height: 50.h),
@@ -226,12 +163,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   mainAxisSpacing: 16,
                   childAspectRatio: 0.62,
                 ),
-                itemCount: _visibleProducts.length + (_hasMore ? 1 : 0),
+                itemCount:
+                productProvider.visibleProducts.length +
+                    (productProvider.hasMore ? 1 : 0),
                 itemBuilder: (context, index) {
-                  if (index >= _visibleProducts.length) {
+                  if (index >= productProvider.visibleProducts.length) {
                     return const AppLoader();
                   }
-                  return ProductCard(product: _visibleProducts[index]);
+                  return ProductCard(
+                    product: productProvider.visibleProducts[index],
+                  );
                 },
               ),
             ],
