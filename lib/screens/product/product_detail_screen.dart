@@ -92,7 +92,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: Image.network(
                         product?.image ?? '',
                         height: 390,
-                        width: 390,
+                        width: double.infinity,
                         fit: BoxFit.cover,
                       ),
                     ),

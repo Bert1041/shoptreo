@@ -157,11 +157,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(
+                 SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  childAspectRatio: 0.62,
+                  childAspectRatio: 0.56.h,
                 ),
                 itemCount:
                 productProvider.visibleProducts.length +
