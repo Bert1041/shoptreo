@@ -1,4 +1,4 @@
-# Shoptreo - Flutter Developer Assessment
+# Shoptreo
 
 ## Project Description
 
