@@ -16,7 +16,7 @@
 * [Test Credentials](#test-credentials)
 * [Project Decisions](#project-decisions)
 * [Screenshots](#-screenshots)
-* 
+  
 ---
 
 ## Setup Instructions
@@ -123,8 +123,9 @@ For quick testing and demonstration purposes, you can use the following credenti
 * **Email:** `test@test.com`
 * **Password:** `Password123!`
 
+---
 
-# Project Decisions
+## Project Decisions
 
 ## Data Fetching & Pagination
 
@@ -159,8 +160,9 @@ void _scrollListener() {
   }
 }
 ```
+---
 
-# 📸 Screenshots
+## 📸 Screenshots
 
 | ![Screenshot 1](images/1.png) | ![Screenshot 2](images/2.png) | ![Screenshot 3](images/3.png) |
 |-------------------------------|-------------------------------|-------------------------------|
