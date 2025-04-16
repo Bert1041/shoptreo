@@ -2,7 +2,7 @@
 
 ## Project Description
 
-**Shoptreo** is a Flutter-based mobile application designed to facilitate user registration, product browsing, and seamless authentication. The app integrates with [fakestoreapi.com](https://fakestoreapi.com) for fetching product data and includes essential features such as login, signup, and viewing product details. This assessment evaluates skills in Flutter development, state management using **Provider**, and API integration.
+**Shoptreo** is a Flutter-based mobile application designed to facilitate user registration, product browsing, and seamless authentication. The app integrates with [fakestoreapi.com](https://fakestoreapi.com) for fetching product data and includes essential features such as login, signup, product listing, and viewing product details. It also demonstrates state management using **Provider** and dynamic data loading with infinite scroll.
 
 ---
 
@@ -14,10 +14,9 @@
 * [Technologies Used](#technologies-used)
 * [App Walkthrough](#app-walkthrough)
 * [Test Credentials](#test-credentials)
-* [Notes](#notes)
-* [Screenshots](#screenshots)
-* [Submission](#submission)
-
+* [Project Decisions](#project-decisions)
+* [Screenshots](#-screenshots)
+* 
 ---
 
 ## Setup Instructions
@@ -124,3 +123,45 @@ For quick testing and demonstration purposes, you can use the following credenti
 * **Email:** `test@test.com`
 * **Password:** `Password123!`
 
+
+# Project Decisions
+
+## Data Fetching & Pagination
+
+- Used `WidgetsBinding.instance.addPostFrameCallback` to delay API calls until after first widget render (avoids `initState` context issues)
+- Implemented lazy loading with `ScrollController` listener for bottom-of-page detection
+- Properly disposed scroll controller to prevent memory leaks
+
+```dart
+final ScrollController _scrollController = ScrollController();
+
+@override
+void initState() {
+  super.initState();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final productProvider = context.read<ProductProvider>();
+    productProvider.fetchProducts(); // initial fetch
+  });
+
+  _scrollController.addListener(_scrollListener);
+}
+
+@override
+void dispose() {
+  _scrollController.dispose();
+  super.dispose();
+}
+
+void _scrollListener() {
+  if (_scrollController.position.pixels ==
+      _scrollController.position.maxScrollExtent) {
+    context.read<ProductProvider>().loadMoreProducts();
+  }
+}
+```
+
+# 📸 Screenshots
+
+| ![Screenshot 1](images/1.png) | ![Screenshot 2](images/2.png) | ![Screenshot 3](images/3.png) |
+|-------------------------------|-------------------------------|-------------------------------|
+| ![Screenshot 4](images/4.png) | ![Screenshot 5](images/5.png) | ![Screenshot 6](images/6.png) |
