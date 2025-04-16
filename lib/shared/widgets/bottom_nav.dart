@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 import 'package:shoptreo/config/constants/colors.dart';
-import 'package:shoptreo/shared/widgets/reusable_app_button.dart';
-import '../../config/routes/app_routes.dart';
-import '../../core/providers/auth_provider.dart';
+import 'package:shoptreo/screens/auth/account_screen.dart';
+import 'package:shoptreo/screens/discover/discover_screen.dart';
+import 'package:shoptreo/screens/orders/orders_screen.dart';
 import '../../screens/home_screen.dart';
 
 class BottomNav extends StatefulWidget {
@@ -19,9 +18,9 @@ class _BottomNavState extends State<BottomNav> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const LogoutScreen(screen: "Discover"),
-    const LogoutScreen(screen: "Orders"),
-    const LogoutScreen(screen: "Account"),
+    const DiscoverScreen(),
+    const OrdersScreen(),
+    const AccountScreen(),
   ];
 
   void _onBottomNavTapped(int index) {
@@ -42,7 +41,7 @@ class _BottomNavState extends State<BottomNav> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.explore_outlined),
-            label: 'Discover',
+            label: 'discover',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag),
@@ -72,36 +71,3 @@ class _BottomNavState extends State<BottomNav> {
   }
 }
 
-class LogoutScreen extends StatelessWidget {
-  final String screen;
-
-  const LogoutScreen({super.key, required this.screen});
-
-  @override
-  Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
-    return Scaffold(
-      appBar: AppBar(title: Text(screen), centerTitle: true),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: AppButton(
-            label: 'Logout',
-            isPrimary: true,
-            onPressed: () {
-              // Logout and navigate to login screen
-              authProvider.logout();
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.start,
-                (route) => false,
-              );
-            },
-            margin: 0,
-          ),
-        ),
-      ),
-    );
-  }
-}

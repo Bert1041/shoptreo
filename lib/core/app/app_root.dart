@@ -8,30 +8,39 @@ import 'package:shoptreo/screens/onboarding/onboarding_screen.dart';
 import 'package:shoptreo/shared/widgets/app_loader.dart';
 
 import '../providers/auth_provider.dart';
+// Error: Could not find the correct Provider<AuthProvider> above this Consumer<AuthProvider> Widget
 
 class AppRoot extends StatelessWidget {
   const AppRoot({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       builder: (context, child) {
-        if (authProvider.isLoading) {
-          return const MaterialApp(home: Scaffold(body: AppLoader()));
-        }
-
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(primaryColor: AppColors.primary),
-          home:
-              authProvider.isAuthenticated
-                  ? const BottomNav()
-                  : const OnboardingScreen(),
-          initialRoute: AppRoutes.onboarding,
-          routes: AppRoutes.routes,
+        return Consumer<AuthProvider>(
+          builder: (context, authProvider, _) {
+            if (authProvider.isLoading) {
+              return const MaterialApp(
+                debugShowCheckedModeBanner: false,
+                home: Scaffold(body: AppLoader()),
+              );
+            }
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData.light().copyWith(
+                primaryColor: AppColors.primary,
+              ),
+              darkTheme: ThemeData.dark(),
+              themeMode: ThemeMode.system,
+              home:
+                  authProvider.isAuthenticated
+                      ? const BottomNav()
+                      : const OnboardingScreen(),
+              initialRoute: AppRoutes.onboarding,
+              routes: AppRoutes.routes,
+            );
+          },
         );
       },
     );

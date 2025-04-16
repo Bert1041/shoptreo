@@ -6,16 +6,16 @@ class ProductProvider with ChangeNotifier {
   final ProductApiService _productApiService;
 
   List<Product> _products = [];
-  List<Product> _visibleProducts = [];
+  List<Product> _visibleProducts = []; // Private list for internal usage
   bool _isLoading = false;
   bool _hasMore = true;
   bool _isError = false;
   String? _errorMessage;
 
-  ProductProvider(this._productApiService);  // Inject ProductApiService through the constructor
+  ProductProvider(this._productApiService);
 
   List<Product> get products => _products;
-  List<Product> get visibleProducts => _visibleProducts;
+  List<Product> get visibleProducts => _visibleProducts; // This is the getter
   bool get isLoading => _isLoading;
   bool get hasMore => _hasMore;
   bool get isError => _isError;
@@ -62,5 +62,17 @@ class ProductProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     });
+  }
+
+  // Method to filter products based on search query
+  void filterProducts(String query) {
+    if (query.isEmpty) {
+      _visibleProducts = _products.take(10).toList(); // Reset to first 10 products if query is empty
+    } else {
+      _visibleProducts = _products
+          .where((product) => product.title.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+    notifyListeners();
   }
 }
